@@ -146,7 +146,7 @@ class WaniKani(callbacks.Plugin):
             resp.raise_for_status()
             data = json.loads(resp.content)
             data = data['requested_information']
-            reviews = data['reviews_available']
+            reviews = data['reviews_available'] or 0
             nextreview = 'NOW'
             if (reviews == 0):
                 nextreview = 'VACATION' if not data['next_review_date'] else \
