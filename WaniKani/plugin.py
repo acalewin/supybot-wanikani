@@ -159,7 +159,7 @@ class WaniKani(callbacks.Plugin):
             return 'HTTP Error.'
 #        except:
 #            return 'Unhandled error. This should probably be handled.'
-        return 'L: %d - R: %d - NEXT: %s' % (data['lessons_available'], reviews, nextreview)
+        return 'L: %d - R: %d - NEXT: %s' % (data['lessons_available'] or 0, reviews, nextreview)
 
     def itemstats(self, irc, msg, args, subset):
         """ [<kanji|radicals|vocab>]
