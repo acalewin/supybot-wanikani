@@ -137,9 +137,13 @@ class WaniKani(callbacks.Plugin):
         return self.WK_getstats(apikey, 'total')
 
     def WK_getreviews(self, apikey):
+        if not apikey:
+            return 'No key found.'
         url = "https://www.wanikani.com/api/user/%s/%s/" % (apikey, 'study-queue')
+        resp = ''
         try:
             resp = requests.get(url=url)
+            resp.raise_for_status()
             data = json.loads(resp.content)
             data = data['requested_information']
             reviews = data['reviews_available']
@@ -149,8 +153,12 @@ class WaniKani(callbacks.Plugin):
                              datetime.fromtimestamp(data['next_review_date'])
                 if (nextreview != 'VACATION'):
                     nextreview = nextreview.isoformat()
+        except ConnectionError:
+            return 'Error loading data from WK. Connection Error.'
+        except HTTPError:
+            return 'HTTP Error.'
         except:
-            return 'Error loading data from WK. Yell at someone'
+            return 'Unhandled error. This should probably be handled.'
         return 'L: %d - R: %d - NEXT: %s' % (data['lessons_available'], reviews, nextreview)
 
     def itemstats(self, irc, msg, args, subset):
