@@ -135,8 +135,22 @@ class WaniKani(callbacks.Plugin):
     def WK_getallstats(self, apikey):
         return self.WK_getstats(apikey, 'total')
 
-    def WK_studyqueue(self, apikey):
-        return 'derp da derp'
+    def WK_getreviews(self, apikey):
+        url = "https://www.wanikani.com/api/user/%s/%s/" % (apikey, 'study-queue')
+        try:
+            resp = requests.get(url=url)
+            data = json.loads(resp.content)
+            data = data['requested_information']
+            reviews = data['reviews_available']
+            nextreview = 'NOW'
+            if (reviews == 0):
+                nextreview = 'VACATION' if not data['next_review_date'] else \
+                             datetime.fromtimestamp(data['next_review_date'])
+                if (nextreview != 'VACATION'):
+                    nextreview = nextreview.isoformat()
+        except:
+            return 'Error loading data from WK. Yell at someone'
+        return 'L: %d - R: %d - NEXT: %s' % (data['lessons_available'], reviews, nextreview)
 
     def itemstats(self, irc, msg, args, subset):
         """ [<kanji|radicals|vocab>]
@@ -168,7 +182,7 @@ class WaniKani(callbacks.Plugin):
         user = msg.nick
         apikey = self.db.getapikey(channel, user)
         irc.reply(WK_getreviews(apikey))
-    reviews = wrap(itemstats)
+    reviews = wrap(reviews)
 
     def poll(self, irc, msg):
         pass
