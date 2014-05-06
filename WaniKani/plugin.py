@@ -104,73 +104,36 @@ class WaniKani(callbacks.Plugin):
         self.db.add(channel, nick, apikey)
     add = wrap(wkadd, ['anything'])
 
-    def WK_getkanjistats(self, apikey):
+    def WK_getstats(self, apikey, target='total'):
         url = "https://www.wanikani.com/api/user/%s/%s/" % (apikey, 'srs-distribution')
         data = ''
         resp_str = ''
+        if not target in ('kanji', 'vocabulary', 'total', 'radicals'):
+            return 'Unknown parameter passed in'
         try:
             resp = requests.get(url=url)
             data = json.loads(resp.content)
             data = data['requested_information']
-            resp_str = 'appr: %d - guru: %d - mast: %d - en: %d - brnd: %d' % (data['apprentice']['kanji'],
-                                                                               data['guru']['kanji'],
-                                                                               data['master']['kanji'],
-                                                                               data['enlighten']['kanji'],
-                                                                               data['burned']['kanji'])
+            resp_str = 'appr: %d - guru: %d - mast: %d - en: %d - brnd: %d' % (data['apprentice'][target],
+                                                                               data['guru'][target],
+                                                                               data['master'][target],
+                                                                               data['enlighten'][target],
+                                                                               data['burned'][target])
         except:
             resp_str = "Error loading data from WK. Yell at someone."
         return resp_str
+
+    def WK_getkanjistats(self, apikey):
+        return self.WK_getstats(apikey, 'kanji')
     
     def WK_getvocabstats(self, apikey):
-        url = "https://www.wanikani.com/api/user/%s/%s/" % (apikey, 'srs-distribution')
-        data = ''
-        resp_str = ''
-        try:
-            resp = requests.get(url=url)
-            data = json.loads(resp.content)
-            data = data['requested_information']
-            resp_str = 'appr: %d - guru: %d - mast: %d - en: %d - brnd: %d' % (data['apprentice']['vocabulary'],
-                                                                               data['guru']['vocabulary'],
-                                                                               data['master']['vocabulary'],
-                                                                               data['enlighten']['vocabulary'],
-                                                                               data['burned']['vocabulary'])
-        except:
-            resp_str = "Error loading data from WK. Yell at someone."
-        return resp_str
+        return self.WK_getstats(apikey, 'vocabulary')
 
     def WK_getradicalstats(self, apikey):
-        url = "https://www.wanikani.com/api/user/%s/%s/" % (apikey, 'srs-distribution')
-        data = ''
-        resp_str = ''
-        try:
-            resp = requests.get(url=url)
-            data = json.loads(resp.content)
-            data = data['requested_information']
-            resp_str = 'appr: %d - guru: %d - mast: %d - en: %d - brnd: %d' % (data['apprentice']['radicals'],
-                                                                               data['guru']['radicals'],
-                                                                               data['master']['radicals'],
-                                                                               data['enlighten']['radicals'],
-                                                                               data['burned']['radicals'])
-        except:
-            resp_str = "Error loading data from WK. Yell at someone."
-        return resp_str
+        return self.WK_getstats(apikey, 'radicals')
 
     def WK_getallstats(self, apikey):
-        url = "https://www.wanikani.com/api/user/%s/%s/" % (apikey, 'srs-distribution')
-        data = ''
-        resp_str = ''
-        try:
-            resp = requests.get(url=url)
-            data = json.loads(resp.content)
-            data = data['requested_information']
-            resp_str = 'appr: %d - guru: %d - mast: %d - en: %d - brnd: %d' % (data['apprentice']['total'],
-                                                                               data['guru']['total'],
-                                                                               data['master']['total'],
-                                                                               data['enlighten']['total'],
-                                                                               data['burned']['total'])
-        except:
-            resp_str = "Error loading data from WK. Yell at someone."
-        return resp_str
+        return self.WK_getstats(apikey, 'total')
 
     def WK_studyqueue(self, apikey):
         return 'derp da derp'
