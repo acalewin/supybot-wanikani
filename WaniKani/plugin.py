@@ -30,6 +30,7 @@
 
 import json
 import requests
+import datetime
 
 import supybot.utils as utils
 import supybot.dbi as dbi
@@ -175,13 +176,13 @@ class WaniKani(callbacks.Plugin):
             irc.reply("you provided a stupid option.")
     itemstats = wrap(itemstats, [optional('anything')])
 
-    def reviews(self, irc, msg):
+    def reviews(self, irc, msg, args):
         """ No inputs
         Returns the user's current review count, or time to next review"""
         channel = msg.args[0]
         user = msg.nick
         apikey = self.db.getapikey(channel, user)
-        irc.reply(WK_getreviews(apikey))
+        irc.reply(self.WK_getreviews(apikey))
     reviews = wrap(reviews)
 
     def poll(self, irc, msg):
