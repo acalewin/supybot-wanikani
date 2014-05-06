@@ -153,9 +153,9 @@ class WaniKani(callbacks.Plugin):
                              datetime.fromtimestamp(data['next_review_date'])
                 if (nextreview != 'VACATION'):
                     nextreview = nextreview.isoformat()
-        except ConnectionError:
+        except requests.exceptions.ConnectionError:
             return 'Error loading data from WK. Connection Error.'
-        except HTTPError:
+        except requests.exceptions.HTTPError:
             return 'HTTP Error.'
         except:
             return 'Unhandled error. This should probably be handled.'
