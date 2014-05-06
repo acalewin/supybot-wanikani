@@ -156,8 +156,8 @@ class WaniKani(callbacks.Plugin):
 #                    nextreview = nextreview.str()
         except requests.exceptions.ConnectionError:
             return 'Error loading data from WK. Connection Error.'
-        except requests.exceptions.HTTPError:
-            return 'HTTP Error.'
+        except requests.exceptions.HTTPError as e:
+            return 'HTTP Error. Got back %s' % e.response.status_code
 #        except:
 #            return 'Unhandled error. This should probably be handled.'
         return 'L: %d - R: %d - NEXT: %s - HR: %d - DAY: %d' % (data['lessons_available'] or 0, reviews,
