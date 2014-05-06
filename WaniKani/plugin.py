@@ -160,7 +160,9 @@ class WaniKani(callbacks.Plugin):
             return 'HTTP Error.'
 #        except:
 #            return 'Unhandled error. This should probably be handled.'
-        return 'L: %d - R: %d - NEXT: %s' % (data['lessons_available'] or 0, reviews, nextreview)
+        return 'L: %d - R: %d - NEXT: %s - HR: %d - DAY: %d' % (data['lessons_available'] or 0, reviews,
+                                                                nextreview, data['reviews_available_next_hour'] or 0,
+                                                                data['reviews_available_next_day'] or 0)
 
     def itemstats(self, irc, msg, args, subset):
         """ [<kanji|radicals|vocab>]
@@ -171,7 +173,7 @@ class WaniKani(callbacks.Plugin):
         apikey = self.db.getapikey(channel, user)
         
         if not apikey:
-            irc.reply('No API key found for %s' % user)
+            irc.reply('No API key found for %s. use the add command to set it.' % user)
             return
         if not subset:
             irc.reply(self.WK_getallstats(apikey))
@@ -193,9 +195,6 @@ class WaniKani(callbacks.Plugin):
         apikey = self.db.getapikey(channel, user)
         irc.reply(self.WK_getreviews(apikey))
     reviews = wrap(reviews)
-
-    def poll(self, irc, msg):
-        pass
 
 Class = WaniKani
 
