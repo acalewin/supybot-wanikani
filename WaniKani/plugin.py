@@ -153,13 +153,12 @@ class WaniKani(callbacks.Plugin):
                              datetime.datetime.fromtimestamp(data['next_review_date'])
                 if (nextreview != 'VACATION'):
                     nextreview = nextreview - datetime.datetime.now()
-#                    nextreview = nextreview.str()
+                    nextreview = datetime.timedelta(days=nextreview.days,
+                                                    seconds=round(nextreview.seconds/60.0))
         except requests.exceptions.ConnectionError:
             return 'Error loading data from WK. Connection Error.'
         except requests.exceptions.HTTPError as e:
             return 'HTTP Error. Got back %s' % e.response.status_code
-#        except:
-#            return 'Unhandled error. This should probably be handled.'
         return 'L: %d - R: %d - NEXT: %s - HR: %d - DAY: %d' % (data['lessons_available'] or 0, reviews,
                                                                 nextreview, data['reviews_available_next_hour'] or 0,
                                                                 data['reviews_available_next_day'] or 0)
