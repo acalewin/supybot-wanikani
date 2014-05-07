@@ -169,7 +169,7 @@ class WaniKani(callbacks.Plugin):
 
         channel = msg.args[0]
         user = msg.nick
-        if (channel not in ('#wanikani', 'cirno-tan'):
+        if (channel not in ('#wanikani', 'cirno-tan')):
             irc.reply('This command can only be used in #wanikani or via PM')
             return
         apikey = self.db.getapikey(channel, user) or self.db.getapikey('cirno-tan', user)
