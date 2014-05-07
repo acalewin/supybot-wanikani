@@ -102,7 +102,7 @@ class WaniKani(callbacks.Plugin):
             irc.reply('Storing WK API Key %s for user %s' % (nick, apikey))
         else:
             irc.reply('No API Key reported')
-        self.db.add(channel, nick, apikey)
+        self.db.add('#wanikani', nick, apikey)
     add = wrap(wkadd, ['anything'])
 
     def WK_getstats(self, apikey, target='total'):
@@ -169,6 +169,9 @@ class WaniKani(callbacks.Plugin):
 
         channel = msg.args[0]
         user = msg.nick
+        if (channel != '#wanikani'):
+            irc.reply('This command can only be used in #wanikani')
+            return
         apikey = self.db.getapikey(channel, user)
         
         if not apikey:
@@ -190,8 +193,11 @@ class WaniKani(callbacks.Plugin):
         """ No inputs
         Returns the user's current review count, or time to next review"""
         channel = msg.args[0]
+        if (channel != '#wanikani'):
+            irc.reply("This command can only be used in #wanikani")
+            return
         user = msg.nick
-        apikey = self.db.getapikey(channel, user)
+        apikey = self.db.getapikey('#wanikani', user) or self.db.getapikey('cirno', user)
         irc.reply(self.WK_getreviews(apikey))
     reviews = wrap(reviews)
 
