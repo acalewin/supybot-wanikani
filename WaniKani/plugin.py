@@ -99,7 +99,7 @@ class WaniKani(callbacks.Plugin):
         nick = msg.nick
         channel = msg.args[0]
         if apikey:
-            irc.reply('Storing WK API Key %s for user %s' % (nick, apikey))
+            irc.reply('Storing WK API Key %s for user %s' % (apikey, nick))
         else:
             irc.reply('No API Key reported')
         self.db.add('#wanikani', nick, apikey)
