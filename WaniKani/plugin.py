@@ -114,8 +114,9 @@ class WaniKani(callbacks.Plugin):
         try:
             resp = requests.get(url=url)
             data = json.loads(resp.content)
+            lvl = data['user_information']['level']
             data = data['requested_information']
-            resp_str = 'appr: %d - guru: %d - mast: %d - en: %d - brnd: %d' % (data['apprentice'][target],
+            resp_str = 'LVL: %d - appr: %d - guru: %d - mast: %d - en: %d - brnd: %d' % (lvl, data['apprentice'][target],
                                                                                data['guru'][target],
                                                                                data['master'][target],
                                                                                data['enlighten'][target],
