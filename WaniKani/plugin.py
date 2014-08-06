@@ -60,23 +60,30 @@ class WKUserDB(plugins.DbiChannelDB):
 
         def add(self, nick, apikey):
             record = self.Record(nick=nick, apikey=apikey)
+#            while self.remove(nick): pass
             super(self.__class__, self).add(record)
             
         def remove(self, nick):
             size = self.size()
             for i in range(1, size+1):
-                u = self.get(i)
-                if u.nick == nick:
-                    self.remove(i)
-                    return True
+                try:
+                    u = self.get(i)
+                    if u.nick == nick:
+                        super(self.__class__, self).remove(i)
+                        return True
+                except: #Bad form, I know. I need to track down where NoRecordError comes from                                                                                                       
+                    pass
             return False
 
         def getapikey(self, nick):
             size = self.size()
             for i in range(1, size+1):
-                u = self.get(i)
-                if u.nick == nick:
-                    return u.apikey
+                try:
+                    u = self.get(i)
+                    if u.nick == nick:
+                        return u.apikey
+                except: #Yeah, yeah.... :(
+                    pass
             return ''
 
 
@@ -102,6 +109,7 @@ class WaniKani(callbacks.Plugin):
             irc.reply('Storing WK API Key %s for user %s' % (apikey, nick))
         else:
             irc.reply('No API Key reported')
+        #while self.db.remove(nick): pass
         self.db.add('#wanikani', nick, apikey)
     add = wrap(wkadd, ['anything'])
 
@@ -115,7 +123,7 @@ class WaniKani(callbacks.Plugin):
             resp = requests.get(url=url)
             data = json.loads(resp.content)
             lvl = data['user_information']['level']
-            data = data['requested_information']
+            data = data.get('requested_information')
             resp_str = 'LVL: %d - appr: %d - guru: %d - mast: %d - en: %d - brnd: %d' % (lvl, data['apprentice'][target],
                                                                                data['guru'][target],
                                                                                data['master'][target],
@@ -146,8 +154,8 @@ class WaniKani(callbacks.Plugin):
             resp = requests.get(url=url)
             resp.raise_for_status()
             data = json.loads(resp.content)
-            data = data['requested_information']  or {}
-            reviews = data['reviews_available'] or 0
+            data = data.get('requested_information')
+            reviews = data.get('reviews_available') or 0
             nextreview = 'NOW'
             if (reviews == 0):
                 nextreview = 'VACATION' if not data['next_review_date'] else \
@@ -161,7 +169,7 @@ class WaniKani(callbacks.Plugin):
         except requests.exceptions.HTTPError as e:
             return 'HTTP Error. Got back %s' % e.response.status_code
         return 'L: %d - R: %d - NEXT: %s - HR: %d - DAY: %d' % (data['lessons_available'] or 0, reviews,
-                                                                nextreview, data['reviews_available_next_hour'] or 0,
+                                                                nextreview, data.get('reviews_available_next_hour') or 0,
                                                                 data['reviews_available_next_day'] or 0)
 
     def itemstats(self, irc, msg, args, subset):
