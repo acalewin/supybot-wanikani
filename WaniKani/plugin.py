@@ -147,7 +147,7 @@ class WaniKani(callbacks.Plugin):
 
     def WK_getreviews(self, apikey):
         if not apikey:
-            return 'No key found.'
+            return 'No key found. Link it with the "add" command.'
         url = "https://www.wanikani.com/api/user/%s/%s/" % (apikey, 'study-queue')
         resp = ''
         try:
@@ -200,7 +200,7 @@ class WaniKani(callbacks.Plugin):
 
     def reviews(self, irc, msg, args):
         """ No inputs
-        Returns the user's current review count, or time to next review"""
+        Returns the user's current review count, or time to next review. Use the 'add' command from the WaniKani plugin to link your apikey."""
         channel = msg.args[0]
         if (channel not in ('#wanikani', 'cirno-tan')):
             irc.reply("This command can only be used in #wanikani or via PM")
