@@ -195,7 +195,7 @@ class WaniKani(callbacks.Plugin):
         elif subset.lower() == 'radicals':
             irc.reply(self.WK_getradicalstats(apikey))
         else:
-            irc.reply("you provided a stupid option.")
+            irc.reply("you provided a stupid option, but you can try https://www.wanikani.com/community/people/%s" % subset)
     itemstats = wrap(itemstats, [optional('anything')])
 
     def reviews(self, irc, msg, args):
