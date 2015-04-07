@@ -62,7 +62,7 @@ class WKUserDB(plugins.DbiChannelDB):
             record = self.Record(nick=nick, apikey=apikey)
 #            while self.remove(nick): pass
             super(self.__class__, self).add(record)
-            
+
         def remove(self, nick):
             size = self.size()
             for i in range(1, size+1):
@@ -71,7 +71,7 @@ class WKUserDB(plugins.DbiChannelDB):
                     if u.nick == nick:
                         super(self.__class__, self).remove(i)
                         return True
-                except: #Bad form, I know. I need to track down where NoRecordError comes from                                                                                                       
+                except: #Bad form, I know. I need to track down where NoRecordError comes from
                     pass
             return False
 
@@ -135,7 +135,7 @@ class WaniKani(callbacks.Plugin):
 
     def WK_getkanjistats(self, apikey):
         return self.WK_getstats(apikey, 'kanji')
-    
+
     def WK_getvocabstats(self, apikey):
         return self.WK_getstats(apikey, 'vocabulary')
 
@@ -155,7 +155,7 @@ class WaniKani(callbacks.Plugin):
             resp.raise_for_status()
             data = json.loads(resp.content)
             data = data.get('requested_information')
-            reviews = data.get('reviews_available') or 0
+            reviews = data.get('reviews_available', 0)
             nextreview = 'NOW'
             if (reviews == 0):
                 nextreview = 'VACATION' if not data['next_review_date'] else \
@@ -168,6 +168,9 @@ class WaniKani(callbacks.Plugin):
             return 'Error loading data from WK. Connection Error.'
         except requests.exceptions.HTTPError as e:
             return 'HTTP Error. Got back %s' % e.response.status_code
+        except AttributeError as e:
+            return 'I think your key is wrong. I could not get review data'
+            
         return 'L: %d - R: %d - NEXT: %s - HR: %d - DAY: %d' % (data['lessons_available'] or 0, reviews,
                                                                 nextreview, data.get('reviews_available_next_hour') or 0,
                                                                 data['reviews_available_next_day'] or 0)
@@ -182,7 +185,7 @@ class WaniKani(callbacks.Plugin):
             irc.reply('This command can only be used in #wanikani or via PM')
             return
         apikey = self.db.getapikey(channel, user) or self.db.getapikey('cirno-tan', user)
-        
+
         if not apikey:
             irc.reply('No API key found for %s. use the add command to set it.' % user)
             return
